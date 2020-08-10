@@ -29,12 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
         })
   })
 
-  // Add event listener for archive buttons
-  document.querySelectorAll('.archive-check').forEach((email) => {
-    email.addEventListener('click', () =>{
-      email
-    })
-  })
 });
 
 
@@ -52,9 +46,11 @@ function compose_email() {
 
 function load_mailbox(mailbox) {
   
-  // Show the mailbox and hide other views
+  // Show the mailbox and hide other views & clear email view
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#email-view').style.display = 'none';
+  document.querySelector('#email-view').innerHTML = '';
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
   // Fetch the mail
@@ -64,80 +60,111 @@ function load_mailbox(mailbox) {
         console.log('FUCK:', error)
       })
       .then(emails => {
-        console.log(emails)
         // Build Email Table
         mailTable()
-        // Populate Email Table
-
+        // Populate Email Table, skip archived
         if (mailbox === 'inbox' || 'sent') {
           for (const email of emails) {
             // noinspection JSUnresolvedVariable
             if (email.archived) {
               continue
             }
-            renderEmail(mailbox, email)
+            renderEmail(email)
           }
         }
       })
 }
 
-function mailTable(mailbox) {
+function mailTable() {
 
   // Make Email Table
-  const emailList = document.createElement('table')
-  emailList.id = 'e-table'
-  const header = emailList.createTHead();
-  const row = header.insertRow(0);
+  const emailList = document.createElement('div')
+  emailList.id = 'email-list'
+
 
   // Table Headers
-  const sender = row.insertCell(0);
-  sender.innerHTML = '<b> Sender </b>'
-  const time = row.insertCell(1);
-  time.innerHTML = '<b> Time </b>'
-  const subject = row.insertCell(2);
-  subject.innerHTML = '<b> Subject </b>'
-  const body = row.insertCell(3);
-  body.innerHTML = '<b> Body </b>'
+  const sender = document.createElement('span');
+  sender.innerHTML = `<span class = "list-header"> Sender </span>`
+  const subject = document.createElement('span');
+  subject.innerHTML = `<span class = "list-header"> Subject </span>`
+  const body = document.createElement('span');
+  body.innerHTML = `<span class = "list-header"> Body </span>`
+  const time = document.createElement('span');
+  time.innerHTML = `<span class = "list-header"> Time </span>`
 
-  if (mailbox === 'inbox' || 'archive') {
-    const archive = row.insertCell(4);
-    archive.innerHTML = '<b> Archive </b>'
-  }
+  emailList.append(sender, subject, body, time)
 
   // Add table to DOM
   document.querySelector('#emails-view').append(emailList)
 }
 
-function renderEmail(mailbox, email) {
+function renderEmail(email) {
 
-  // Create new row for the email
-  const mail = document.createElement('tr');
+  // Create new button for the email
+  const mail = document.createElement('button');
 
-  if (email.read) {
-    mail.className = 'read'
-  }
   mail.className = 'email'
-
-  const sender = mail.insertCell(0);
-  sender.innerHTML = email.sender;
-  const time = mail.insertCell(1);
-  time.innerHTML = email.timestamp;
-  const subject = mail.insertCell(2);
-  subject.innerHTML = email.subject;
-  const body = mail.insertCell(3);
-  body.innerHTML = email.body;
-  // Add archive option for inbox & archive box
-  if (mailbox === 'inbox' || 'archive') {
-    const archive = mail.insertCell(4);
-    const check = document.createElement('input')
-    check.type = 'checkbox'
-    check.className = 'archive-check'
-    check.value = email.archived
-    archive.append(check)
+  if (email.read) {
+    mail.className += '\ read'
   }
-  document.querySelector('#e-table').append(mail)
+  mail.id = email.id
+  mail.addEventListener('click', () => {
+    openEmail(email)
+  })
+
+  const sender = document.createElement('span');
+  sender.innerHTML = email.sender;
+  const subject = document.createElement('span');
+  subject.innerHTML = email.subject;
+  const body = document.createElement('span');
+  body.innerHTML = `${email.body}`.slice(0,30)+'...';
+  const time = document.createElement('span');
+  time.innerHTML = email.timestamp;
+
+  mail.append(sender, subject, body, time)
+  document.querySelector('#email-list').append(mail)
 }
 
-function archiver() {
+function openEmail(email) {
+  // Show compose view and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#email-view').style.display = 'block';
 
+  // fetch email info from the email id
+  fetch(`/emails/${email.id}`)
+      .then(response => response.json())
+      .then(mail => {
+        const subject = document.createElement('h3').innerHTML = mail.subject
+        const from = document.createElement("div")
+        from.className = 'form-group'
+        from.innerHTML = `From: <input disabled class="form-control" value="${mail.sender}">`
+        const body = document.createElement("p")
+        body.innerText = mail.body
+
+        document.querySelector('#email-view').append(subject, from, body)
+      })
+  setRead(email)
+}
+
+function setRead(email) {
+  // Send PUT via fetch to mark email as read
+  fetch(`/emails/${email.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      read: true
+    })
+  }).then(() => {
+    console.log('got eem')
+  })
+}
+
+function setArchived(email) {
+  // Send PUT via fetch to mark email as archived
+  fetch(`/emails/${email.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      archived: true
+    })
+  }).then(() => {
+  })
 }

@@ -28,15 +28,13 @@ textarea {
   display: flex;
   justify-content: space-between;
   background-color: white;
-}
-.email span {
-  display: inline;
-  padding: 0;
-  font-weight: bolder;
+  span {
+    display: inline;
+    padding: 0;
+    font-weight: bolder;
+  }
 }
 
 .read {
   background-color: grey;
 }
-
-/*# sourceMappingURL=styles.css.map */
