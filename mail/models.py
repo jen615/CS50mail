@@ -17,8 +17,6 @@ class Email(models.Model):
     archived = models.BooleanField(default=False)
 
     def serialize(self):
-        print(self)
-        print(self.timestamp)
         return {
             "id": self.id,
             "sender": self.sender.email,

@@ -19,24 +19,50 @@ textarea {
   width: 20px;
 }
 
-.email {
+.mail-header {
+  padding-top: 5px;
+  font-size: 1.1em;
+  font-weight: bolder;
+}
+
+.email, .headers {
   width: 100%;
   border: 1px solid black;
   border-collapse: collapse;
-  height: 40px;
+  height: 25px;
   overflow-y: hidden;
+  overflow-x: hidden;
   display: flex;
   justify-content: space-between;
   background-color: white;
 }
-.email span {
-  display: inline;
+.email span, .headers span {
+  display: block;
   padding: 0;
   font-weight: bolder;
+}
+.email img, .headers img {
+  width: 20px;
+  height: 20px;
+  margin-right: 3px;
 }
 
 .read {
   background-color: grey;
+}
+
+.mail-body {
+  height: 20vh;
+}
+
+.button-area {
+  display: flex;
+  align-content: center;
+}
+.button-area button {
+  justify-content: right;
+  margin-top: 5px;
+  margin-right: 5px;
 }
 
 /*# sourceMappingURL=styles.css.map */
