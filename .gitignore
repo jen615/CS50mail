@@ -1,3 +1,4 @@
 /.idea/
 /mail/static/mail/styles.css.map
 db.sqlite3
+/mail/migrations/0002_auto_20200824_0939.py
