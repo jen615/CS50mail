@@ -13,7 +13,7 @@ textarea {
 }
 
 .list-header {
-  color: darkgreen;
+  color: #5c755c;
   font-size: larger;
   font-weight: bold;
   width: 20px;
@@ -23,6 +23,11 @@ textarea {
   padding-top: 5px;
   font-size: 1.1em;
   font-weight: bolder;
+}
+
+.form-control:disabled {
+  color: black;
+  background-color: antiquewhite;
 }
 
 .email, .headers {
