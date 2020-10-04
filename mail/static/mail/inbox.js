@@ -234,8 +234,9 @@ function sendReply(email) {
     document.querySelector('#email-view').style.display = 'none';
     document.querySelector('#compose-view').style.display = 'block';
 
+    console.log()
     // Clear out composition fields
     document.querySelector('#compose-recipients').value = `${email.sender}`;
     document.querySelector('#compose-subject').value = email.subject.includes('Re')? ` ${email.subject}` : `Re: ${email.subject}`;
-    document.querySelector('#compose-body').innerHTML = `\n------------------------------------------------------\nOriginal Msg From: ${email.sender} >> \n\n${email.body}`;
+    document.querySelector('#compose-body').value = `\n------------------------------------------------------\nOriginal Msg From: ${email.sender} >> \n\n${email.body}`;
 }
